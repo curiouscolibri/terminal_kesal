@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL_KESAL_</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cousine -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cousine:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- Marked for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Tailwind Config for Custom Colors & Font -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        custom: {
+                            navy: '#25355a',      /* Backgrounds */
+                            medium: '#344a78',    /* Gradients / Panels */
+                            slate: '#4a608a',     /* UI elements / Panels */
+                            orange: '#f08a2b',    /* Accents / Buttons */
+                        }
+                    },
+                    fontFamily: {
+                        cousine: ['Cousine', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cousine', monospace;
+            background-color: #25355a; /* custom.navy */
+            color: #e2e8f0; /* slate-200 */
+        }
+        
+        /* Custom Scrollbar for a retro terminal feel */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #25355a; }
+        ::-webkit-scrollbar-thumb { background-color: #4a608a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #f08a2b; }
+
+        /* Typography adjustments for Markdown in Dark Mode */
+        .prose-invert p { margin-bottom: 0.75em; color: #e2e8f0; }
+        .prose-invert strong { color: #f08a2b; font-weight: 700; }
+
+        /* Tab Styles */
+        .tab-btn {
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            border-bottom: 2px solid #f08a2b;
+            color: #f08a2b;
+            text-shadow: 0 0 8px rgba(240, 138, 43, 0.4);
+        }
+
+        /* Smash Therapy Custom Cursor */
+        .smash-area {
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 48 48' style='font-size:32px;'><text y='32'>🔨</text></svg>") 16 32, crosshair !important;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        /* Cracks styling */
+        .crack {
+            position: absolute;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            filter: drop-shadow(0px 0px 2px rgba(255,255,255,0.7));
+        }
+
+        /* Particle animation for shattering */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            background-size: cover;
+            z-index: 20;
+            opacity: 1;
+            transition: transform 0.8s cubic-bezier(0.15, 0.9, 0.3, 1), opacity 0.8s ease-out;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        /* Cookie Shake Animation */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg) scale(1); }
+            10% { transform: translate(-1px, -2px) rotate(-2deg) scale(1.05); }
+            20% { transform: translate(-3px, 0px) rotate(2deg) scale(1.05); }
+            30% { transform: translate(3px, 2px) rotate(0deg) scale(1.05); }
+            40% { transform: translate(1px, -1px) rotate(2deg) scale(1.05); }
+            50% { transform: translate(-1px, 2px) rotate(-2deg) scale(1.05); }
+            60% { transform: translate(-3px, 1px) rotate(0deg) scale(1.05); }
+            70% { transform: translate(3px, 1px) rotate(-2deg) scale(1.05); }
+            80% { transform: translate(-1px, -1px) rotate(2deg) scale(1.05); }
+            90% { transform: translate(1px, 2px) rotate(0deg) scale(1.05); }
+            100% { transform: translate(1px, -2px) rotate(-2deg) scale(1); }
+        }
+        .shake-anim {
+            animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* Scanline Overlay for retro vibe */
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col font-cousine bg-custom-navy text-slate-200">
+
+    <!-- Scanline Overlay -->
+    <div class="fixed inset-0 scanlines z-50 pointer-events-none opacity-30"></div>
+
+    <!-- Header & Navigation -->
+    <header class="bg-gradient-to-r from-custom-navy to-custom-medium border-b-2 border-custom-slate pt-4 pb-0 z-40 flex-shrink-0 shadow-lg relative">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
+                <div>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-custom-orange tracking-tighter uppercase drop-shadow-[0_0_10px_rgba(240,138,43,0.5)]">
+                        TERMINAL_KESAL_
+                    </h1>
+                    <p class="text-xs text-custom-slate font-bold mt-1">SYS.ONLINE // NO_STRESS_PROTOCOL</p>
+                </div>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="flex gap-1 sm:gap-4 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('ai')" id="tab-btn-ai" class="tab-btn active px-3 py-2 text-sm sm:text-base font-bold text-gray-400 hover:text-custom-orange focus:outline-none uppercase tracking-wide whitespace-nowrap">
+                    [1] Curhat Gratis
+                </button>
+                <button onclick="switchTab('smash')" id="tab-btn-smash" class="tab-btn px-3 py-2 text-sm sm:text-base font-bold text-gray-400 hover:text-custom-orange focus:outline-none uppercase tracking-wide whitespace-nowrap">
+                    [2] Terapi Palu
+                </button>
+                <button onclick="switchTab('cookie')" id="tab-btn-cookie" class="tab-btn px-3 py-2 text-sm sm:text-base font-bold text-gray-400 hover:text-custom-orange focus:outline-none uppercase tracking-wide whitespace-nowrap">
+                    [3] Kue Realita
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow relative overflow-hidden bg-custom-navy">
+        
+        <!-- ================= TAB 1: CURHAT GRATIS (AI CHAT) ================= -->
+        <div id="tab-ai" class="absolute inset-0 flex flex-col items-center justify-center p-4 transition-opacity duration-300">
+            
+            <div class="w-full max-w-4xl h-full flex flex-col bg-custom-medium border-2 border-custom-slate rounded-md shadow-[0_0_15px_rgba(74,96,138,0.3)] overflow-hidden">
+                
+                <!-- Chat Header -->
+                <div class="bg-custom-slate p-3 border-b-2 border-custom-navy flex justify-between items-center">
+                    <div>
+                        <h2 class="font-bold text-custom-orange text-lg uppercase tracking-wider">CURHAT GRATIS</h2>
+                        <p class="text-xs text-gray-300 italic">powered by sceptical & slaptical AI</p>
+                    </div>
+                    <div class="flex gap-1">
+                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                    </div>
+                </div>
+
+                <!-- Chat History Container -->
+                <div id="chat-container" class="flex-grow overflow-y-auto p-4 sm:p-6 space-y-6 bg-gradient-to-b from-custom-navy to-custom-medium">
+                    <!-- Initial AI Greeting -->
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-custom-slate border-2 border-custom-orange flex-shrink-0 flex items-center justify-center text-xl shadow-[0_0_10px_rgba(240,138,43,0.3)]">🤖</div>
+                        <div class="bg-custom-slate border border-custom-orange/50 p-4 rounded-lg rounded-tl-none shadow-md max-w-[85%] sm:max-w-[75%] relative">
+                            <div class="absolute -left-2 top-0 w-4 h-4 bg-custom-slate transform rotate-45 border-l border-t border-custom-orange/50"></div>
+                            <p class="text-sm text-gray-100 leading-relaxed relative z-10">
+                                Woi. Kesini lagi lu? Muka lu udah kusut gitu kayak belum disetrika. Sini tumpahin aja semua keresahan lu, mau soal netizen, kerjaan, atau idup lu yang gitu-gitu aja. Tapi inget, gue di sini bukan buat manjain lu. Kalau lu salah ya gue roasting. Ketik di bawah cepet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loading-indicator" class="hidden px-6 pb-2 flex gap-4 bg-custom-medium">
+                    <div class="w-10 h-10 rounded-full bg-custom-slate border-2 border-custom-orange flex-shrink-0 flex items-center justify-center text-xl opacity-50">🤖</div>
+                    <div class="bg-custom-slate p-3 rounded-lg rounded-tl-none flex items-center gap-2 h-10 mt-1">
+                        <div class="w-2 h-2 bg-custom-orange rounded-full animate-ping"></div>
+                        <span class="text-xs text-custom-orange font-bold uppercase">Processing Reality Check...</span>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-4 bg-custom-slate/50 border-t-2 border-custom-slate">
+                    <form id="chat-form" class="flex items-end gap-3 relative">
+                        <textarea 
+                            id="user-input" 
+                            rows="1" 
+                            class="w-full bg-custom-navy border-2 border-custom-slate text-gray-100 text-sm rounded py-3 pl-4 pr-12 focus:outline-none focus:border-custom-orange resize-none transition-all placeholder-gray-500 shadow-inner"
+                            placeholder=">_ Ketik keresahan lu di sini..."
+                            style="min-height: 48px; max-height: 150px;"
+                        ></textarea>
+                        <button type="submit" id="send-btn" class="absolute right-2 bottom-1.5 w-10 h-10 flex items-center justify-center bg-custom-orange text-custom-navy font-bold rounded hover:bg-orange-400 transition-colors shadow-[0_0_10px_rgba(240,138,43,0.5)] disabled:bg-custom-slate disabled:text-gray-500 disabled:shadow-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                <path d="M3.478 2.404a.75.75 0 00-.926.941l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.404z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: TERAPI PALU ================= -->
+        <div id="tab-smash" class="hidden absolute inset-0 flex-col items-center p-4 lg:p-8 overflow-y-auto">
+            
+            <div class="text-center mb-6 mt-4 w-full max-w-2xl" id="smash-header">
+                <h2 class="text-3xl font-bold text-custom-orange mb-2 uppercase tracking-widest drop-shadow-md">Terapi Palu</h2>
+                <p class="text-gray-300 text-sm border-l-4 border-custom-orange pl-3 text-left inline-block bg-custom-slate/30 p-2 rounded">
+                    > SYSTEM LOG: Modul destruksi diaktifkan. <br>
+                    > INSTRUKSI: Unggah gambar yang bikin lu emosi (chat ngeselin, berita bodoh, dll). Pukul 5 kali pake palu digital ini sampe hancur berkeping-keping.
+                </p>
+            </div>
+
+            <!-- Upload Area -->
+            <div id="upload-area" class="w-full max-w-md bg-custom-slate/40 border-2 border-dashed border-custom-orange rounded p-12 text-center hover:bg-custom-slate/70 transition-all cursor-pointer shadow-lg mt-8">
+                <input type="file" id="image-upload" accept="image/*" class="hidden">
+                <div class="text-5xl mb-4 drop-shadow-lg">📥</div>
+                <h3 class="font-bold text-custom-orange text-lg mb-2 uppercase">UPLOAD TARGET</h3>
+                <p class="text-xs text-gray-400">[ Data aman. Gambar hanya dirender di browser lu. ]</p>
+            </div>
+
+            <!-- Smash Arena (Hidden initially) -->
+            <div id="smash-arena" class="hidden w-full max-w-3xl flex-col items-center">
+                <div class="w-full flex justify-between items-center mb-4 bg-custom-slate p-3 rounded border border-custom-orange/30 shadow-md">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl animate-pulse">🔨</span>
+                        <span class="text-sm font-bold text-white uppercase tracking-wider">Sisa Pukulan: <span id="hit-counter" class="text-custom-orange text-xl">5</span></span>
+                    </div>
+                    <button onclick="resetSmash()" class="text-xs font-bold text-custom-navy bg-custom-orange px-3 py-1.5 rounded hover:bg-orange-400 uppercase transition-colors">
+                        ABORT / RESET
+                    </button>
+                </div>
+                
+                <!-- Image Container -->
+                <div id="image-container" class="smash-area w-full max-w-2xl flex justify-center items-center bg-custom-navy p-2 rounded border-2 border-custom-slate shadow-[0_0_20px_rgba(74,96,138,0.5)] transition-colors relative" style="min-height: 40vh;">
+                    <img id="target-image" src="" alt="Target" class="max-w-full max-h-[60vh] object-contain rounded pointer-events-none select-none">
+                </div>
+            </div>
+
+            <!-- Completion Message -->
+            <div id="smash-complete" class="hidden flex-col items-center justify-center mt-12 bg-custom-slate border-2 border-custom-orange p-8 rounded shadow-[0_0_30px_rgba(240,138,43,0.4)] max-w-lg text-center z-30">
+                <div class="text-6xl mb-4">💥</div>
+                <h3 class="text-2xl font-bold text-custom-orange mb-3 uppercase tracking-wider">Target Destroyed</h3>
+                <p class="text-gray-200 mb-6 text-sm">
+                    Lega? Inget, apa yang ada di layar itu cuma sekumpulan piksel. Jangan biarkan piksel bodoh ngerusak mood lu di dunia nyata.
+                </p>
+                <button onclick="resetSmash()" class="bg-custom-orange text-custom-navy px-6 py-2 rounded font-bold hover:bg-orange-400 transition-colors uppercase w-full">
+                    > Inisialisasi Ulang Target
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ================= TAB 3: KUE REALITA ================= -->
+        <div id="tab-cookie" class="hidden absolute inset-0 flex-col items-center justify-center p-4">
+            
+            <div class="text-center mb-10 w-full max-w-lg relative z-20">
+                <h2 class="text-3xl font-bold text-custom-orange mb-3 uppercase tracking-widest drop-shadow-md">Kue Realita</h2>
+                <div class="bg-custom-slate/50 border border-custom-slate p-3 rounded text-sm text-gray-300">
+                    <p>> Tekan kue di bawah untuk mendapat tamparan realita hari ini.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center justify-center z-20 w-full max-w-lg relative">
+                <!-- Cookie Button -->
+                <button id="cookie-btn" onclick="crackCookie()" class="text-[120px] sm:text-[150px] mb-8 focus:outline-none hover:scale-105 transition-transform drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
+                    🥠
+                </button>
+
+                <!-- Fortune Text Reveal -->
+                <div id="fortune-reveal" class="hidden opacity-0 flex-col items-center bg-custom-medium p-6 sm:p-8 rounded border-2 border-custom-orange shadow-[0_0_20px_rgba(240,138,43,0.4)] transition-all duration-700 w-full transform translate-y-4">
+                    <div class="text-2xl mb-2">📜</div>
+                    <p id="fortune-text" class="text-white text-center text-base sm:text-lg leading-relaxed font-bold italic mb-6">
+                        <!-- Quote goes here -->
+                    </p>
+                    <button onclick="resetCookie()" class="text-xs font-bold text-custom-orange border border-custom-orange px-4 py-2 hover:bg-custom-orange hover:text-custom-navy transition-colors uppercase rounded">
+                        > Minta Tamparan Lain
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Decorative background elements for Tab 3 -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 z-0 text-9xl">
+                <div class="grid grid-cols-3 gap-10">
+                    <div>🥠</div><div>🥠</div><div>🥠</div>
+                    <div>🥠</div><div>🥠</div><div>🥠</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Modal for Errors (Replaces alert) -->
+    <div id="msg-box" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[100] backdrop-blur-sm">
+        <div class="bg-custom-slate border-2 border-custom-orange p-6 max-w-sm w-full mx-4 rounded shadow-2xl">
+            <h3 id="msg-title" class="text-custom-orange font-bold text-lg mb-2 uppercase">System Alert</h3>
+            <p id="msg-body" class="text-white text-sm mb-6"></p>
+            <div class="flex justify-end">
+                <button onclick="closeMsgBox()" class="bg-custom-orange text-custom-navy font-bold px-4 py-1.5 rounded hover:bg-orange-400">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= UTILS: MESSAGE BOX =================
+        function showMsg(title, message) {
+            document.getElementById('msg-title').innerText = title;
+            document.getElementById('msg-body').innerText = message;
+            document.getElementById('msg-box').classList.remove('hidden');
+            document.getElementById('msg-box').classList.add('flex');
+        }
+        function closeMsgBox() {
+            document.getElementById('msg-box').classList.add('hidden');
+            document.getElementById('msg-box').classList.remove('flex');
+        }
+
+        // ================= TAB NAVIGATION =================
+        function switchTab(tabId) {
+            // Reset active classes
+            ['ai', 'smash', 'cookie'].forEach(id => {
+                document.getElementById(`tab-btn-${id}`).classList.remove('active');
+                const tab = document.getElementById(`tab-${id}`);
+                tab.classList.add('hidden');
+                tab.classList.remove('flex');
+            });
+            
+            // Set active
+            document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            activeTab.classList.remove('hidden');
+            activeTab.classList.add('flex');
+            
+            // Trigger layout recalcs if needed
+            if(tabId === 'ai') scrollToBottom();
+        }
+
+        // ================= TAB 1: CURHAT GRATIS (AI LOGIC) =================
+        
+        // Auto-resize textarea
+        const tx = document.getElementById('user-input');
+        tx.addEventListener("input", function() {
+            this.style.height = '48px'; // reset
+            this.style.height = (this.scrollHeight) + 'px';
+        }, false);
+
+        tx.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('chat-form').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        let chatHistory = [];
+
+        const systemPrompt = `Kamu adalah "Konselor Digital", AI psikolog yang berperan sebagai tsundere, sassy, dan sceptical. 
+Gunakan bahasa gaul Indonesia santai (gue, lu, hadeh, woy, dll). 
+Panjang jawaban HARUS SEDANG: 4-6 kalimat.
+Alur respon: 
+1. Berikan slight roast / tamparan realita yang sarkas tapi masuk akal terkait keluhannya.
+2. Akhiri dengan memberikan saran grounding, penenang, atau rasa peduli yang dibalut dengan gengsi (tsundere).
+Jangan bertele-tele. Jangan terlalu formal.`;
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Add User Message
+            addMessageToUI(message, 'user');
+            
+            // Reset Input
+            userInput.value = '';
+            userInput.style.height = '48px';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            loadingIndicator.classList.remove('hidden');
+            scrollToBottom();
+
+            chatHistory.push({ role: "user", parts: [{ text: message }] });
+
+            const payload = {
+                contents: chatHistory,
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    temperature: 0.7
+                }
+            };
+
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('Network Error');
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0) {
+                    const aiText = result.candidates[0].content.parts[0].text;
+                    chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+                    addMessageToUI(aiText, 'ai');
+                } else {
+                    throw new Error('Empty response');
+                }
+            } catch (error) {
+                console.error(error);
+                chatHistory.pop(); // Remove user message from history if failed
+                showMsg('Connection Failed', 'Aduh, server lagi ngadat. Tarik napas dulu, terus coba kirim lagi.');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+                scrollToBottom();
+            }
+        });
+
+        function addMessageToUI(text, sender) {
+            const msgDiv = document.createElement('div');
+            
+            if (sender === 'user') {
+                msgDiv.className = 'flex gap-4 flex-row-reverse';
+                msgDiv.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-custom-orange text-custom-navy font-bold flex-shrink-0 flex items-center justify-center text-sm shadow-md">LU</div>
+                    <div class="bg-custom-navy border border-custom-orange/80 text-white p-4 rounded-lg rounded-tr-none shadow-md max-w-[85%] sm:max-w-[75%] relative">
+                        <div class="absolute -right-2 top-0 w-4 h-4 bg-custom-navy transform rotate-45 border-r border-t border-custom-orange/80"></div>
+                        <p class="text-sm whitespace-pre-wrap break-words relative z-10">${escapeHTML(text)}</p>
+                    </div>
+                `;
+            } else if (sender === 'ai') {
+                msgDiv.className = 'flex gap-4';
+                const parsedText = marked.parse(text);
+                msgDiv.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-custom-slate border-2 border-custom-orange flex-shrink-0 flex items-center justify-center text-xl shadow-[0_0_10px_rgba(240,138,43,0.3)]">🤖</div>
+                    <div class="bg-custom-slate border border-custom-orange/50 p-4 rounded-lg rounded-tl-none shadow-md max-w-[85%] sm:max-w-[75%] relative">
+                        <div class="absolute -left-2 top-0 w-4 h-4 bg-custom-slate transform rotate-45 border-l border-t border-custom-orange/50"></div>
+                        <div class="text-sm prose-invert prose-slate leading-relaxed break-words relative z-10 font-medium">${parsedText}</div>
+                    </div>
+                `;
+            }
+
+            chatContainer.appendChild(msgDiv);
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 50);
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
+        // ================= TAB 2: TERAPI PALU LOGIC =================
+
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('image-upload');
+        const smashArena = document.getElementById('smash-arena');
+        const targetImage = document.getElementById('target-image');
+        const imageContainer = document.getElementById('image-container');
+        const hitCounterDisplay = document.getElementById('hit-counter');
+        const smashComplete = document.getElementById('smash-complete');
+        const smashHeader = document.getElementById('smash-header');
+
+        let hitsLeft = 5;
+        let originalImageData = null;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    originalImageData = event.target.result;
+                    targetImage.src = originalImageData;
+                    
+                    uploadArea.classList.add('hidden');
+                    smashHeader.classList.add('hidden');
+                    smashArena.classList.remove('hidden');
+                    smashArena.classList.add('flex');
+                    
+                    hitsLeft = 5;
+                    hitCounterDisplay.innerText = hitsLeft;
+                    targetImage.style.opacity = '1';
+                    imageContainer.classList.remove('bg-transparent');
+                    imageContainer.classList.add('bg-custom-navy');
+                    
+                    // Clear old fragments
+                    document.querySelectorAll('.crack').forEach(e => e.remove());
+                    document.querySelectorAll('.particle').forEach(e => e.remove());
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // SVG Cracks
+        const crackPaths = [
+            '<svg viewBox="0 0 100 100" class="w-24 h-24 stroke-white drop-shadow-md fill-none"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M50 0 L45 20 L55 35 L40 60 L60 80 L50 100"/><path stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M45 20 L20 15 M55 35 L80 40"/></svg>',
+            '<svg viewBox="0 0 100 100" class="w-32 h-32 stroke-white drop-shadow-md fill-none"><path stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M0 50 L30 40 L50 55 L70 35 L100 50"/><path stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M30 40 L20 20 M70 35 L85 15"/></svg>',
+            '<svg viewBox="0 0 100 100" class="w-20 h-20 stroke-white drop-shadow-md fill-none"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M10 10 L40 50 L90 20 M40 50 L30 90 M40 50 L80 80"/></svg>'
+        ];
+
+        imageContainer.addEventListener('mousedown', function(e) {
+            if (hitsLeft <= 0) return;
+
+            // Visual feedback on hit
+            targetImage.style.transform = `scale(0.95) translate(${Math.random()*10-5}px, ${Math.random()*10-5}px)`;
+            imageContainer.style.borderColor = '#f08a2b';
+            setTimeout(() => { 
+                targetImage.style.transform = 'scale(1) translate(0,0)'; 
+                imageContainer.style.borderColor = '#4a608a';
+            }, 100);
+
+            // Add crack
+            const rect = imageContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const crackDiv = document.createElement('div');
+            crackDiv.className = 'crack';
+            crackDiv.style.left = `${x}px`;
+            crackDiv.style.top = `${y}px`;
+            crackDiv.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 360}deg)`;
+            crackDiv.innerHTML = crackPaths[Math.floor(Math.random() * crackPaths.length)];
+            imageContainer.appendChild(crackDiv);
+
+            hitsLeft--;
+            hitCounterDisplay.innerText = hitsLeft;
+
+            if (hitsLeft === 0) {
+                triggerShatterEffect();
+            }
+        });
+
+        function triggerShatterEffect() {
+            targetImage.style.opacity = '0';
+            document.querySelectorAll('.crack').forEach(e => e.style.opacity = '0');
+            imageContainer.classList.remove('bg-custom-navy');
+            imageContainer.classList.add('bg-transparent');
+            imageContainer.style.borderColor = 'transparent';
+            imageContainer.style.boxShadow = 'none';
+
+            const rect = targetImage.getBoundingClientRect();
+            const containerRect = imageContainer.getBoundingClientRect();
+            
+            const rows = 8;
+            const cols = 8;
+            const pWidth = rect.width / cols;
+            const pHeight = rect.height / rows;
+
+            for(let r = 0; r < rows; r++) {
+                for(let c = 0; c < cols; c++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.width = `${pWidth}px`;
+                    particle.style.height = `${pHeight}px`;
+                    
+                    const imgLeftInContainer = rect.left - containerRect.left;
+                    const imgTopInContainer = rect.top - containerRect.top;
+                    
+                    particle.style.left = `${imgLeftInContainer + (c * pWidth)}px`;
+                    particle.style.top = `${imgTopInContainer + (r * pHeight)}px`;
+                    
+                    particle.style.backgroundImage = `url(${originalImageData})`;
+                    particle.style.backgroundPosition = `-${c * pWidth}px -${r * pHeight}px`;
+                    particle.style.backgroundSize = `${rect.width}px ${rect.height}px`;
+                    
+                    imageContainer.appendChild(particle);
+
+                    // Animate outward
+                    setTimeout(() => {
+                        const tx = (Math.random() - 0.5) * 800;
+                        const ty = (Math.random() - 0.5) * 800;
+                        const rot = (Math.random() - 0.5) * 720;
+                        particle.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(0)`;
+                        particle.style.opacity = '0';
+                    }, 50);
+                }
+            }
+
+            setTimeout(() => {
+                smashArena.classList.add('hidden');
+                smashArena.classList.remove('flex');
+                smashComplete.classList.remove('hidden');
+                smashComplete.classList.add('flex');
+            }, 900);
+        }
+
+        function resetSmash() {
+            fileInput.value = '';
+            smashComplete.classList.add('hidden');
+            smashComplete.classList.remove('flex');
+            smashArena.classList.add('hidden');
+            smashArena.classList.remove('flex');
+            
+            uploadArea.classList.remove('hidden');
+            smashHeader.classList.remove('hidden');
+            
+            imageContainer.style.borderColor = '';
+            imageContainer.style.boxShadow = '';
+            
+            document.querySelectorAll('.crack').forEach(e => e.remove());
+            document.querySelectorAll('.particle').forEach(e => e.remove());
+        }
+
+        // ================= TAB 3: KUE REALITA LOGIC =================
+        
+        const quotes = [
+            "Gak usah pusing mau mengubah apa yang gak bisa lo ubah, seperti hari kemarin. Itu udah lewat.",
+            "Jangan lupa senyum hari ini (kalo galak terus kasian nanti film horor gak laku).",
+            "Ngapain overthinking omongan orang di internet? Mending lo minum air putih gih, ginjal lo lebih butuh perhatian.",
+            "Dunia gak bakal kiamat cuma karena lo telat balas chat. Tidur woy.",
+            "Lo tuh bukan pusat tata surya. Gak semua hal tentang lo. Santai aja.",
+            "Berhenti scroll sosmed nyari validasi. Muka lo lebih butuh skincare daripada likes.",
+            "Kalo lo ngerasa capek banget, wajar. Namanya juga hidup, bukan rebahan.",
+            "Itu layar HP gak akan ngasih lo pelukan. Mending lo elus kucing sana.",
+            "Ekspektasi lo ketinggian. Coba diturunin dikit biar pas jatuh gak sakit-sakit amat.",
+            "Hari ini emang berat, tapi seenggaknya lo belum botak karena stres kan?",
+            "Gak usah sok kuat. Nangis aja kalo mau, asal abis itu pesen makanan enak.",
+            "Lo kira dengan overthinking, masalah lo kelar? Kagak. Cuma nambah uban doang.",
+            "Detoks digital itu perlu. HP lo aja butuh di-charge, masa lo terus-terusan nyala?",
+            "Ngapain lo bandingin hidup lo sama highlight sosmed orang lain? Cringe tau.",
+            "Ambil napas panjang... nah gitu. Sekarang tutup aplikasi ini dan kerja gih.",
+            "Hari ini lo udah cukup berusaha. Besok lagi aja rusuhnya.",
+            "Semua orang punya masalah, lo doang yang bikin seolah-olah dunia mau runtuh.",
+            "Mata lu udah sepet tuh liat layar terus. Kedip napa, kedip!",
+            "Jangan lupa makan. Orang marah-marah biasanya cuma karena lapar. (Gue peduli lho ini)",
+            "Gak semua hal harus lo kasih opini. Kadang diam itu emas, dan emas itu mahal.",
+            "Kalau idup lo berasa kayak sinetron, mungkin lo yang terlalu mendramatisir.",
+            "Udah, taruh HP-nya. Gak ada hal penting yang bakal terjadi 5 menit ke depan di timeline lo.",
+            "Sukses itu butuh proses, bukan sekadar gonta-ganti bio Instagram.",
+            "Lo butuh udara segar. Jangan sampai AC kamar ngebentuk kepribadian lo.",
+            "Sadar gak sih posture duduk lo sekarang melengkung kayak udang rebus? Tegak!",
+            "Gue tahu lo capek. Tapi ntar malem tidurnya jangan kemaleman ya. Awas aja lu.",
+            "Lo hebat udah bertahan sampai hari ini. Meski kelakuan lo kadang bikin gue gedeg.",
+            "Gak usah dengerin kata haters. Mereka cuma iri gak punya kuota buat rebahan kayak lo.",
+            "Bahagia itu sederhana: gak ngeliat HP sehari. Berani coba gak lo?",
+            "Udah baca ini? Ya udah sana pergi, ngapain masih di sini. (Tapi awas aja kalo gak jaga kesehatan)"
+        ];
+
+        const cookieBtn = document.getElementById('cookie-btn');
+        const fortuneReveal = document.getElementById('fortune-reveal');
+        const fortuneText = document.getElementById('fortune-text');
+
+        function crackCookie() {
+            // Disable button during animation
+            cookieBtn.disabled = true;
+            
+            // Add shake animation
+            cookieBtn.classList.add('shake-anim');
+            
+            setTimeout(() => {
+                // Change cookie to cracked
+                cookieBtn.innerText = '🥠✨';
+                
+                // Get random quote
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                fortuneText.innerText = `"${randomQuote}"`;
+                
+                // Reveal fortune
+                fortuneReveal.classList.remove('hidden');
+                // Allow browser to render block before fading in
+                setTimeout(() => {
+                    fortuneReveal.classList.remove('opacity-0');
+                    fortuneReveal.classList.remove('translate-y-4');
+                    fortuneReveal.classList.add('opacity-100');
+                    fortuneReveal.classList.add('translate-y-0');
+                }, 50);
+
+            }, 600); // Wait for shake animation to finish
+        }
+
+        function resetCookie() {
+            fortuneReveal.classList.remove('opacity-100');
+            fortuneReveal.classList.remove('translate-y-0');
+            fortuneReveal.classList.add('opacity-0');
+            fortuneReveal.classList.add('translate-y-4');
+            
+            setTimeout(() => {
+                fortuneReveal.classList.add('hidden');
+                cookieBtn.innerText = '🥠';
+                cookieBtn.classList.remove('shake-anim');
+                cookieBtn.disabled = false;
+            }, 500);
+        }
+
+        // Initialize Tab 1 active
+        switchTab('ai');
+
+    </script>
+</body>
+</html>
